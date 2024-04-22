@@ -8,6 +8,6 @@ export type GlobalData = {
 export interface ExcelLikeTableProps {
   data: any[];
   updateData: (row: number, column: number, value: any) => void; 
-  table_id: keyof GlobalData;
+  addBulkData: (data: any[]) => void;
   columnNames: any;
 }

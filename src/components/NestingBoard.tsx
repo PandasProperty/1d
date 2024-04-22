@@ -259,6 +259,12 @@ const NestingBoard = () => {
 		setGlobalData({ ...globalData, [id]: newData });
 	}
 
+	const addBulkData = (id: typeof ID_TABLE_BARS | typeof ID_TABLE_PARTS) => (data: any[]) => {
+		setGlobalData({
+			...globalData, [id]: data, 
+		})
+	}
+
 	return (
 		<>
 			<Tabs value={activeTab} pb={"30%"}>
@@ -309,11 +315,23 @@ const NestingBoard = () => {
 				</Tabs.Panel>
 
 				<Tabs.Panel value="bars" pt={16}>
-					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_BARS} columnNames={colNamesBars} data={globalData[ID_TABLE_BARS]} updateData={updateGlobalData(ID_TABLE_BARS)} />
+					<ExcelLikeTable
+						key={cancelCounter}
+						columnNames={colNamesBars}
+						data={globalData[ID_TABLE_BARS]}
+						updateData={updateGlobalData(ID_TABLE_BARS)}
+						addBulkData={addBulkData(ID_TABLE_BARS)}
+					/>
 				</Tabs.Panel>
 
 				<Tabs.Panel value="parts" pt={16}>
-					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_PARTS} columnNames={colNamesParts} data={globalData[ID_TABLE_PARTS]} updateData={updateGlobalData(ID_TABLE_PARTS)} />
+					<ExcelLikeTable
+						key={cancelCounter}
+						columnNames={colNamesParts}
+						data={globalData[ID_TABLE_PARTS]}
+						updateData={updateGlobalData(ID_TABLE_PARTS)}
+						addBulkData={addBulkData(ID_TABLE_PARTS)}
+					/>
 				</Tabs.Panel>
 			</Tabs>
 

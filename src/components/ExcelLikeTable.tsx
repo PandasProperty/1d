@@ -44,7 +44,7 @@ const showNotifInfo = (title?: string, msg?: string) => {
 	});
 };
 
-const ExcelLikeTable = ({ table_id, columnNames, data, updateData }: ExcelLikeTableProps) => {
+const ExcelLikeTable = ({ columnNames, data, updateData, addBulkData }: ExcelLikeTableProps) => {
 	// Handler to update data state
 	const handleInputChange = useCallback((row: any, column: any, value: number) => {
 		updateData(row, column, value);
@@ -96,7 +96,7 @@ const ExcelLikeTable = ({ table_id, columnNames, data, updateData }: ExcelLikeTa
 					data.push([cell1, cell2]);
 				}
 			}
-			setGlobalData({ ...globalData, [table_id]: data });
+			addBulkData(data);
 		} catch (error) {
 			showNotifError("Error while pasting data", "Please check your data and try again.");
 		}
