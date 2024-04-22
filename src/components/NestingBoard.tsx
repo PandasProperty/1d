@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
 	Tabs,
 	rem,
@@ -28,8 +28,7 @@ import {
 } from "@tabler/icons-react";
 import { Dropzone, MS_EXCEL_MIME_TYPE } from "@mantine/dropzone";
 import { notifications } from "@mantine/notifications";
-import ExcelLikeTable, { maxRows } from "@/components/ExcelLikeTable.tsx";
-import { GlobalContext, ID_TABLE_BARS, ID_TABLE_PARTS } from "@/contexts/GlobalContext";
+import ExcelLikeTable from "@/components/ExcelLikeTable.tsx";
 import {
 	areAllRowsFilledRequired,
 	downloadFileWithName,
@@ -42,6 +41,8 @@ import {
 import { nest, nestDownloadCSV, nestDownloadExcel } from "@/api/api";
 import PDFContainer from "@/components/PDFContainer";
 import { notifHide } from "@/hooks/notifications";
+import { NestingBoardProps } from '@/types';
+import { colNamesBars, colNamesParts, ID_TABLE_BARS, ID_TABLE_PARTS, maxRows } from '@/constants';
 
 const CSV_MIME_TYPE = ["text/csv"];
 const SPREADSHEET_MIME_TYPE = [...MS_EXCEL_MIME_TYPE, ...CSV_MIME_TYPE];
@@ -59,8 +60,6 @@ const basicFieldProps = {
 	decimalScale: 2,
 };
 const units = ["mm", "cm", "m"];
-const colNamesBars = ["length", "quantity (0=infinite)"];
-const colNamesParts = ["length", "quantity"];
 const NOTIF_ID = "abc";
 
 const showNotifError = (title?: string, msg?: string) => {
@@ -85,8 +84,8 @@ const findFirstEmptyArrayIndex = (arrayOfArrays: any, startIndex: number) => {
 	return -1;
 };
 
-const NestingBoard = () => {
-	const { globalData, setGlobalData }: any = useContext(GlobalContext);
+const NestingBoard = ({ globalData, setGlobalData }: NestingBoardProps) => {
+	
 	const [activeTab, setActiveTab] = useState<string>(initialActiveTab);
 	const [nestResultToken, setNestResultToken] = useState<string>("");
 	// const [dataURL, setDataURL] = useState<string>("");
@@ -234,7 +233,7 @@ const NestingBoard = () => {
 		for (let i = firstEmptyRowIndex + 1; i < secondEmptyRowIndex; i++) {
 			newData.push([res[i][0], res[i][1]]);
 		}
-		setGlobalData((prev: any) => ({ ...prev, [ID_TABLE_BARS]: newData }));
+		updateGlobalData((prev: any) => ({ ...prev, [ID_TABLE_BARS]: newData }));
 
 		newData = [];
 		for (let i = secondEmptyRowIndex + 1; i < res.length; i++) {
@@ -242,6 +241,14 @@ const NestingBoard = () => {
 		}
 		setGlobalData((prev: number[][]) => ({ ...prev, [ID_TABLE_PARTS]: newData }));
 	};
+
+	const updateGlobalData = (id: typeof ID_TABLE_BARS | typeof ID_TABLE_PARTS) => (
+		row: number, column: number, value: any
+	) => {
+		const newData =  globalData[id];
+		newData[row][column] = value;
+		setGlobalData({ ...globalData, [id]: newData });
+	}
 
 	return (
 		<>
@@ -293,11 +300,11 @@ const NestingBoard = () => {
 				</Tabs.Panel>
 
 				<Tabs.Panel value="bars" pt={16}>
-					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_BARS} columnNames={colNamesBars} />
+					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_BARS} columnNames={colNamesBars} data={globalData[ID_TABLE_BARS]} updateGlobalData={updateGlobalData} />
 				</Tabs.Panel>
 
 				<Tabs.Panel value="parts" pt={16}>
-					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_PARTS} columnNames={colNamesParts} />
+					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_PARTS} columnNames={colNamesParts} data={globalData[ID_TABLE_PARTS]} updateGlobalData={updateGlobalData} />
 				</Tabs.Panel>
 			</Tabs>
 

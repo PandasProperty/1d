@@ -1,25 +1,24 @@
 import { useState } from "react";
 import {
 	Burger,
-	Drawer,
 	Container,
 	useMantineTheme,
 	Flex,
 	Space,
-	Button,
-	Title,
-	Text,
-	Accordion,
-	List,
-	ListItem,
-	Divider,
 } from "@mantine/core";
 import logo from "./assets/logo.png"; // Importing the logo
-import NestingBoard from "@/components/NestingBoard.tsx";
+import NestingBoard from "@/components/NestingBoard";
+import { colNamesBars, colNamesParts, ID_TABLE_BARS, ID_TABLE_PARTS, initialNrRows } from './constants';
+import { GlobalData } from './types';
 
 function App() {
 	const theme = useMantineTheme();
 	const [drawerOpened, setDrawerOpened] = useState(false);
+
+	const [globalData, setGlobalData] = useState<GlobalData>({
+    [ID_TABLE_BARS]: Array.from({ length: initialNrRows }, () => new Array(colNamesBars.length).fill("")),
+    [ID_TABLE_PARTS]: Array.from({ length: initialNrRows }, () => new Array(colNamesParts.length).fill("")),
+  });
 
 	return (
 		<>
@@ -39,7 +38,7 @@ function App() {
 
 				<Space h={"md"} />
 
-				<NestingBoard />
+				<NestingBoard globalData={globalData} setGlobalData={setGlobalData} />
 			</Container>
 
 		</>
