@@ -300,11 +300,11 @@ const NestingBoard = ({ globalData, setGlobalData }: NestingBoardProps) => {
 				</Tabs.Panel>
 
 				<Tabs.Panel value="bars" pt={16}>
-					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_BARS} columnNames={colNamesBars} data={globalData[ID_TABLE_BARS]} updateGlobalData={updateGlobalData} />
+					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_BARS} columnNames={colNamesBars} data={globalData[ID_TABLE_BARS]} updateData={updateGlobalData(ID_TABLE_BARS)} />
 				</Tabs.Panel>
 
 				<Tabs.Panel value="parts" pt={16}>
-					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_PARTS} columnNames={colNamesParts} data={globalData[ID_TABLE_PARTS]} updateGlobalData={updateGlobalData} />
+					<ExcelLikeTable key={cancelCounter} table_id={ID_TABLE_PARTS} columnNames={colNamesParts} data={globalData[ID_TABLE_PARTS]} updateData={updateGlobalData(ID_TABLE_PARTS)} />
 				</Tabs.Panel>
 			</Tabs>
 
