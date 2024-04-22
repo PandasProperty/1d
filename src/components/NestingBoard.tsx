@@ -41,8 +41,8 @@ import {
 import { nest, nestDownloadCSV, nestDownloadExcel } from "@/api/api";
 import PDFContainer from "@/components/PDFContainer";
 import { notifHide } from "@/hooks/notifications";
-import { NestingBoardProps } from '@/types';
-import { colNamesBars, colNamesParts, ID_TABLE_BARS, ID_TABLE_PARTS, maxRows } from '@/constants';
+import { colNamesBars, colNamesParts, ID_TABLE_BARS, ID_TABLE_PARTS, maxRows, initialNrRows } from '@/constants';
+import { GlobalData } from '@/types';
 
 const CSV_MIME_TYPE = ["text/csv"];
 const SPREADSHEET_MIME_TYPE = [...MS_EXCEL_MIME_TYPE, ...CSV_MIME_TYPE];
@@ -84,8 +84,16 @@ const findFirstEmptyArrayIndex = (arrayOfArrays: any, startIndex: number) => {
 	return -1;
 };
 
-const NestingBoard = ({ globalData, setGlobalData }: NestingBoardProps) => {
-	
+const getInitialGlobalData = (): GlobalData => {
+	return {
+    [ID_TABLE_BARS]: Array.from({ length: initialNrRows }, () => new Array(colNamesBars.length).fill("")),
+    [ID_TABLE_PARTS]: Array.from({ length: initialNrRows }, () => new Array(colNamesParts.length).fill("")),
+  };
+}
+
+const NestingBoard = () => {
+	const [globalData, setGlobalData] = useState<GlobalData>(getInitialGlobalData());
+
 	const [activeTab, setActiveTab] = useState<string>(initialActiveTab);
 	const [nestResultToken, setNestResultToken] = useState<string>("");
 	// const [dataURL, setDataURL] = useState<string>("");
@@ -123,6 +131,7 @@ const NestingBoard = ({ globalData, setGlobalData }: NestingBoardProps) => {
 		setCancelCounter((prev) => prev + 1);
 		form.reset();
 		setActiveTab(initialActiveTab);
+		setGlobalData(getInitialGlobalData());
 	};
 
 	const handleRun = async () => {
