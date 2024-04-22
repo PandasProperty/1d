@@ -1,0 +1,7 @@
+.modal-pdf section {
+	height: 100%;
+}
+
+.modal-pdf .mantine-Modal-body {
+	height: calc(100% - 4rem);
+}
