@@ -1,21 +1,13 @@
 import { useState } from "react";
 import {
 	Burger,
-	Drawer,
 	Container,
 	useMantineTheme,
 	Flex,
 	Space,
-	Button,
-	Title,
-	Text,
-	Accordion,
-	List,
-	ListItem,
-	Divider,
 } from "@mantine/core";
 import logo from "./assets/logo.png"; // Importing the logo
-import NestingBoard from "@/components/NestingBoard.tsx";
+import NestingBoard from "@/components/NestingBoard";
 
 function App() {
 	const theme = useMantineTheme();

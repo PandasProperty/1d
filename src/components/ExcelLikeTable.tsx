@@ -1,13 +1,13 @@
-import { useContext, useEffect } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Table, NumberInput, Button, Group } from "@mantine/core";
-import { GlobalContext } from "@/contexts/GlobalContext";
 import { IconX, IconClipboardPlus, IconExclamationMark } from "@tabler/icons-react";
 import { hideNotification, notifications } from "@mantine/notifications";
 import { existsVal, isNumber } from "@/utils";
+import { ExcelLikeTableProps } from '@/types';
+import { maxRows } from '@/constants';
 
 const NOTIF_ID = "abc";
-const initialNrRows = 100;
-export const maxRows = initialNrRows;
+
 // const rowsPerLoad = 20;
 const basicFieldProps = {
 	min: 0,
@@ -44,17 +44,11 @@ const showNotifInfo = (title?: string, msg?: string) => {
 	});
 };
 
-const ExcelLikeTable = ({ table_id, columnNames }: any) => {
-	const { globalData, setGlobalData }: any = useContext(GlobalContext);
-	const defaultData = Array.from({ length: initialNrRows }, () => new Array(columnNames.length).fill(""));
-	const data = globalData[table_id];
-
+const ExcelLikeTable = ({ table_id, columnNames, data, updateData }: ExcelLikeTableProps) => {
 	// Handler to update data state
-	const handleInputChange = (row: any, column: any, value: number) => {
-		const newData = [...data];
-		newData[row][column] = value;
-		setGlobalData({ ...globalData, [table_id]: newData });
-	};
+	const handleInputChange = useCallback((row: any, column: any, value: number) => {
+		updateData(row, column, value);
+	}, [updateData]);
 
 	const handleClickPaste = async () => {
 		hideNotification(NOTIF_ID);
@@ -108,38 +102,41 @@ const ExcelLikeTable = ({ table_id, columnNames }: any) => {
 		}
 	};
 
-	useEffect(() => {
-		setGlobalData((prev: any) => ({ ...prev, [table_id]: defaultData }));
-	}, []);
-
 	// Generate table rows
-	const rows = data
-		.concat(Array.from({ length: initialNrRows - data.length }, () => new Array(columnNames.length).fill("")))
-		.map((row: any, rowIndex: number) => (
-			<tr key={rowIndex}>
-				<td style={{ textAlign: "center", color: "#ced4da" }}>{rowIndex + 1}</td>
-				{row.map((cell: any, columnIndex: number) => (
-					<td key={columnIndex}>
-						{columnIndex == 0 ? (
-							<NumberInput
-								{...basicFieldProps}
-								value={cell}
-								decimalScale={2}
-								fixedDecimalScale={true}
-								onChange={(val: any) => handleInputChange(rowIndex, columnIndex, val)}
-							/>
-						) : (
-							<NumberInput
-								{...basicFieldProps}
-								allowDecimal={false}
-								value={cell}
-								onChange={(val: any) => handleInputChange(rowIndex, columnIndex, val)}
-							/>
-						)}
-					</td>
-				))}
-			</tr>
-		));
+	const rows = useMemo(() => {
+		return (
+			<React.Fragment>
+				{
+					data.map((row: any, rowIndex: number) => (
+						<tr key={rowIndex}>
+							<td style={{ textAlign: "center", color: "#ced4da" }}>{rowIndex + 1}</td>
+							{row.map((cell: any, columnIndex: number) => (
+								<td key={columnIndex}>
+									{columnIndex == 0 ? (
+										<NumberInput
+											{...basicFieldProps}
+											value={cell}
+											decimalScale={2}
+											fixedDecimalScale={true}
+											onChange={(val: any) => handleInputChange(rowIndex, columnIndex, val)}
+										/>
+									) : (
+										<NumberInput
+											{...basicFieldProps}
+											allowDecimal={false}
+											value={cell}
+											onChange={(val: any) => handleInputChange(rowIndex, columnIndex, val)}
+										/>
+									)}
+								</td>
+							))}
+						</tr>
+					))
+				}
+			</React.Fragment>
+			);
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [data]);
 
 	return (
 		<>
