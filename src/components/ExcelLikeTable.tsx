@@ -46,9 +46,21 @@ const showNotifInfo = (title?: string, msg?: string) => {
 
 const ExcelLikeTable = ({ table_id, columnNames, data, updateData }: ExcelLikeTableProps) => {
 	// Handler to update data state
-	const handleInputChange = useCallback((row: any, column: any, value: number) => {
+	const handleInputChange = useCallback((row: number, column: number, value: number) => {
+		if (value > basicFieldProps.max || value < basicFieldProps.min) {
+			return;
+		}
 		updateData(row, column, value);
 	}, [updateData]);
+
+	const enforceFieldValidation: (rowIndex: number, columnIndex: number) => React.KeyboardEventHandler<HTMLInputElement> = useCallback((rowIndex, columnIndex) => (event) => {
+			if (event.currentTarget.value !== "") {
+				const value = Number.parseFloat(event.currentTarget.value);
+				if (value > basicFieldProps.max || value < basicFieldProps.min) {
+					event.currentTarget.value = data[rowIndex][columnIndex];
+				}
+			}
+		}, [data]);
 
 	const handleClickPaste = async () => {
 		hideNotification(NOTIF_ID);
@@ -119,6 +131,7 @@ const ExcelLikeTable = ({ table_id, columnNames, data, updateData }: ExcelLikeTa
 											decimalScale={2}
 											fixedDecimalScale={true}
 											onChange={(val: any) => handleInputChange(rowIndex, columnIndex, val)}
+											onKeyUp={enforceFieldValidation(rowIndex, columnIndex)}
 										/>
 									) : (
 										<NumberInput
@@ -126,6 +139,7 @@ const ExcelLikeTable = ({ table_id, columnNames, data, updateData }: ExcelLikeTa
 											allowDecimal={false}
 											value={cell}
 											onChange={(val: any) => handleInputChange(rowIndex, columnIndex, val)}
+											onKeyUp={enforceFieldValidation(rowIndex, columnIndex)}
 										/>
 									)}
 								</td>
